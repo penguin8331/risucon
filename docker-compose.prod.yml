@@ -11,7 +11,7 @@ services:
       - ./sql/01_initial_data.sql:/docker-entrypoint-initdb.d/01_initial_data.sql:ro
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "risucon", "-prisucon"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "risucon", "-prisucon"]
       interval: 5s
       timeout: 5s
       retries: 10
