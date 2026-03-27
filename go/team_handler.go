@@ -224,9 +224,14 @@ func getTeamHandler(c echo.Context) error {
 	}
 
 	leader := User{}
-	err = tx.GetContext(c.Request().Context(), &leader, "SELECT * FROM users WHERE id = ?", team.LeaderID)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get leader: "+err.Error())
+	if u, ok := usercache.Load(team.LeaderID); ok {
+		leader = u.(User)
+	} else {
+		err = tx.GetContext(c.Request().Context(), &leader, "SELECT * FROM users WHERE id = ?", team.LeaderID)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get leader: "+err.Error())
+		}
+		usercache.Store(team.LeaderID, leader)
 	}
 	res.LeaderName = leader.Name
 	res.LeaderDisplayName = leader.DisplayName
@@ -237,9 +242,14 @@ func getTeamHandler(c echo.Context) error {
 
 	if team.Member1ID != nulluserid {
 		member1 := User{}
-		err = tx.GetContext(c.Request().Context(), &member1, "SELECT * FROM users WHERE id = ?", team.Member1ID)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get member1: "+err.Error())
+		if u, ok := usercache.Load(team.Member1ID); ok {
+			member1 = u.(User)
+		} else {
+			err = tx.GetContext(c.Request().Context(), &member1, "SELECT * FROM users WHERE id = ?", team.Member1ID)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "failed to get member1: "+err.Error())
+			}
+			usercache.Store(team.Member1ID, member1)
 		}
 		res.Member1Name = member1.Name
 		res.Member1DisplayName = member1.DisplayName
@@ -253,9 +263,14 @@ func getTeamHandler(c echo.Context) error {
 
 	if team.Member2ID != nulluserid {
 		member2 := User{}
-		err = tx.GetContext(c.Request().Context(), &member2, "SELECT * FROM users WHERE id = ?", team.Member2ID)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get member2: "+err.Error())
+		if u, ok := usercache.Load(team.Member2ID); ok {
+			member2 = u.(User)
+		} else {
+			err = tx.GetContext(c.Request().Context(), &member2, "SELECT * FROM users WHERE id = ?", team.Member2ID)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "failed to get member2: "+err.Error())
+			}
+			usercache.Store(team.Member2ID, member2)
 		}
 		res.Member2Name = member2.Name
 		res.Member2DisplayName = member2.DisplayName

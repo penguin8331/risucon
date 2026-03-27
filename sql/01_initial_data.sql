@@ -18,25 +18,26 @@ INSERT INTO `teams` (`id`, `name`, `display_name`, `leader_id`, `member1_id`, `m
 TRUNCATE TABLE `tasks`;
 ALTER TABLE `tasks` AUTO_INCREMENT = 1;
 INSERT INTO `tasks` (`id`, `name`, `display_name`, `statement`, `submission_limit`) VALUES
-    (1, 'A', '足し算', '足し算をしてください。', 15),
-    (2, 'B', '引き算', '引き算をしてください。', 20);
+    (1, 'A', '足し算', '足し算をしてください。', 10),
+    (2, 'B', '引き算', '引き算をしてください。符号が間違っていた場合は、部分点として配点の 50 % の得点が与えられます。', 10);
 
 TRUNCATE TABLE `subtasks`;
 ALTER TABLE `subtasks` AUTO_INCREMENT = 1;
 INSERT INTO `subtasks` (`id`, `name`, `display_name`, `task_id`, `statement`) VALUES
-    (1, 'A_1', '(1)', 1, '1+1=?'),
-    (2, 'A_2', '(2)', 1, '1+2=?'),
-    (3, 'B_1', '(1)', 2, '1-1=?'),
-    (4, 'B_2', '(2)', 2, '1-2=? (符号のみが間違っていた場合、部分点が与えられる。)');
+    (1, 'A_1', '(1)', 1, '$$ 1+1=\\mathord{?} $$'),
+    (2, 'A_2', '(2)', 1, '$$ 1+2=\\mathord{?} $$'),
+    (3, 'B_1', '(1)', 2, '$$ 2-1=\\mathord{?} $$'),
+    (4, 'B_2', '(2)', 2, '$$ 1-3=\\mathord{?} $$');
 
 TRUNCATE TABLE `answers`;
 ALTER TABLE `answers` AUTO_INCREMENT = 1;
 INSERT INTO `answers` (`id`, `task_id`, `subtask_id`, `answer`, `score`) VALUES
     (1, 1, 1, '2', 10),
     (2, 1, 2, '3', 10),
-    (3, 2, 3, '0', 10),
-    (4, 2, 4, '-1', 10),
-    (5, 2, 4, '1', 5);
+    (3, 2, 3, '1', 10),
+    (4, 2, 3, '-1', 5),
+    (5, 2, 4, '-2', 10),
+    (6, 2, 4, '2', 5);
 
 TRUNCATE TABLE `submissions`;
 ALTER TABLE `submissions` AUTO_INCREMENT = 1;

@@ -4,6 +4,7 @@ package main
 
 import (
 	// "fmt"
+	"database/sql"
 	"log"
 	"net"
 	"net/http"
@@ -19,6 +20,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echolog "github.com/labstack/gommon/log"
+
+	_ "net/http/pprof"
 )
 
 const (
@@ -59,6 +62,7 @@ func connectDB() (*sqlx.DB, error) {
 	config.Passwd = getEnv("RISUCON_DB_PASSWORD", "risucon")
 	config.DBName = getEnv("RISUCON_DB_NAME", "risucontest")
 	config.ParseTime = true
+	config.Params = map[string]string{"interpolateParams": "true"}
 	dsn := config.FormatDSN()
 	return sqlx.Open("mysql", dsn)
 }
@@ -68,9 +72,29 @@ func initializeHandler(c echo.Context) error {
 		c.Logger().Warnf("init.sh failed with err=%s", string(out))
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to initialize: "+err.Error())
 	}
-
+	// score
+	subs := []Submission{}
+	if err := dbConn.Select(&subs, "SELECT * FROM submissions"); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to select submissions: "+err.Error())
+	}
+	for _, sub := range subs {
+		ans := Answer{}
+		if err := dbConn.Get(&ans, "SELECT * FROM answers WHERE task_id = ? AND answer = ?", sub.TaskID, sub.Answer); err == sql.ErrNoRows {
+			ans.Score = 0
+			ans.SubtaskID = -1
+		} else if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to select answers: "+err.Error())
+		}
+		if _, err := dbConn.Exec("UPDATE submissions SET score = ? , subtask_id = ? WHERE id = ?", ans.Score, ans.SubtaskID, sub.ID); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to update submissions: "+err.Error())
+		}
+	}
 	// キャッシュを消す
 	subtaskcache = sync.Map{}
+	standingssubcache = sync.Map{}
+	standingssubexistscache = sync.Map{}
+	usercache = sync.Map{}
+	subtaskmaxscorecache = sync.Map{}
 
 	c.Request().Header.Add("Content-Type", "application/json;charset=utf-8")
 	return c.JSON(http.StatusOK, InitializeResponse{
@@ -79,9 +103,14 @@ func initializeHandler(c echo.Context) error {
 }
 
 func main() {
+	/*http.DefaultServeMux.Handle("/debug/fgprof/profile", fgprof.Handler())
+	go func() {
+		log.Println(http.ListenAndServe(":6060", nil))
+	}()*/
+
 	e := echo.New()
-	e.Debug = true
-	e.Logger.SetLevel(echolog.DEBUG)
+	e.Debug = false
+	e.Logger.SetLevel(echolog.ERROR)
 	e.Use(middleware.Logger())
 	cookiestore := sessions.NewCookieStore(secret)
 	e.Use(session.Middleware(cookiestore))
@@ -115,7 +144,6 @@ func main() {
 
 	// 以上に当てはまらなければ index.html を返す
 	e.GET("/*", getIndexHandler)
-	
 
 	// DB接続
 	db, err := connectDB()
@@ -123,7 +151,7 @@ func main() {
 		e.Logger.Errorf("failed to connect db: %v", err)
 		os.Exit(1)
 	}
-	db.SetMaxOpenConns(10)
+	db.SetMaxOpenConns(1000)
 	defer db.Close()
 	if err := db.Ping(); err != nil {
 		e.Logger.Errorf("failed to ping db: %v", err)
