@@ -13,6 +13,7 @@ FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     default-mysql-client \
+    openssl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/go
