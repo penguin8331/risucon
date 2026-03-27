@@ -59,3 +59,10 @@ sudo apt update
 ## 2. Install the Docker packages.
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
+
+### nginx の構成
+
+```sh
+bash ./nginx/gen-certs.sh <your-ip-address>
+docker compose -f docker-compose.prod.yml up -d
+```
