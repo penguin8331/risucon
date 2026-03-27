@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+
 TRUNCATE TABLE `users`;
 ALTER TABLE `users` AUTO_INCREMENT = 1;
 INSERT INTO `users` (`id`, `name`, `display_name`, `description`, `passhash`) VALUES
