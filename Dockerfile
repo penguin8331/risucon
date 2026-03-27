@@ -6,7 +6,7 @@ COPY go/go.mod go/go.sum ./
 RUN go mod download
 
 COPY go/ ./
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/server .
+RUN go mod tidy && CGO_ENABLED=0 GOOS=linux go build -o /app/server .
 
 # Runtime stage
 FROM debian:bookworm-slim
