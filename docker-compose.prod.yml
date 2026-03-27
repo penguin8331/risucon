@@ -29,7 +29,7 @@ services:
         condition: service_healthy
 
   nginx:
-    image: nginx:1.27-alpine
+    image: nginx:1.27-bookworm
     ports:
       - "80:80"
       - "443:443"
