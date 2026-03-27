@@ -1,0 +1,34 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: risucontest
+      MYSQL_USER: risucon
+      MYSQL_PASSWORD: risucon
+    volumes:
+      - ./sql/00_schema.sql:/docker-entrypoint-initdb.d/00_schema.sql:ro
+      - ./sql/01_initial_data.sql:/docker-entrypoint-initdb.d/01_initial_data.sql:ro
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "risucon", "-prisucon"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      RISUCON_DB_HOST: db
+      RISUCON_DB_PORT: "3306"
+      RISUCON_DB_USER: risucon
+      RISUCON_DB_PASSWORD: risucon
+      RISUCON_DB_NAME: risucontest
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
