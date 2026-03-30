@@ -41,10 +41,10 @@ INSERT INTO `answers` (`id`, `task_id`, `subtask_id`, `answer`, `score`) VALUES
 
 TRUNCATE TABLE `submissions`;
 ALTER TABLE `submissions` AUTO_INCREMENT = 1;
-INSERT INTO `submissions` (`id`, `task_id`, `user_id`, `submitted_at`, `answer`) VALUES
-    (1, 1, 2, '2012-06-20 00:00:00', '2'),
-    (2, 1, 3, '2012-06-20 00:00:01', '3'),
-    (3, 2, 4, '2012-06-20 00:00:02', '0'),
-    (4, 2, 2, '2012-06-20 00:00:03', '-1'),
-    (5, 2, 3, '2012-06-20 00:00:04', '1'),
-    (6, 2, 5, '2012-06-20 00:00:04', '-1');
+INSERT INTO `submissions` (`id`, `task_id`, `user_id`, `submitted_at`, `answer`, `subtask_id`, `score`) VALUES
+    (1, 1, 2, '2012-06-20 00:00:00', '2', 1, 10),
+    (2, 1, 3, '2012-06-20 00:00:01', '3', 2, 10),
+    (3, 2, 4, '2012-06-20 00:00:02', '0', -1, 0),
+    (4, 2, 2, '2012-06-20 00:00:03', '-1', 3, 5),
+    (5, 2, 3, '2012-06-20 00:00:04', '1', 3, 10),
+    (6, 2, 5, '2012-06-20 00:00:05', '2', 4, 5);
