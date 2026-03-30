@@ -1,12 +1,12 @@
 # Build stage
-FROM golang:1.25-bookworm AS builder
+FROM golang:1.25.8-bookworm AS builder
 
 WORKDIR /build
 COPY go/go.mod go/go.sum ./
 RUN go mod download
 
 COPY go/ ./
-RUN go mod tidy && CGO_ENABLED=0 GOOS=linux go build -o /app/server .
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o /app/server .
 
 # Runtime stage
 FROM debian:bookworm-slim
