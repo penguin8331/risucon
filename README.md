@@ -2,27 +2,29 @@
 
 ## 初期データについて
 
+[Seed ファイル](./sql/01_initial_data.sql)
+
 ### `users, teams`
 
-| username | password | 備考            |
-| -------- | -------- | --------------- |
-| admin    | admin    | 管理者          |
-| risucon1 | risucon1 | team1 リーダー  |
-| risucon2 | risucon2 | team1 メンバー1 |
-| risucon3 | risucon3 | team1 メンバー2 |
-| risucon4 | risucon4 | team2 リーダー  |
+| username | password | 備考              |
+| -------- | -------- | ----------------- |
+| admin    | admin    | 管理者            |
+| risucon1 | risucon1 | チーム1 リーダー  |
+| risucon2 | risucon2 | チーム1 メンバー1 |
+| risucon3 | risucon3 | チーム1 メンバー2 |
+| risucon4 | risucon4 | チーム2 リーダー  |
 
 ## GCE 上での操作
 
 ### VM の作成
 
-| 項目                 | 値（test）                     |
-| -------------------- | ------------------------------ |
-| ゾーン               | asia-northeast1-a              |
-| マシンタイプ         | e2-medium                      |
-| OS                   | Debian GNU/Linux 12 (bookworm) |
-| ブートディスクサイズ | 20GB                           |
-| tags                 | http-server, http-8080         |
+| 項目                 | 値 (test 時)                             |
+| -------------------- | ---------------------------------------- |
+| リージョン           | asia-northeast1 (東京)                   |
+| マシンタイプ         | e2-medium（2 vCPU、1 コア、4 GB メモリ） |
+| OS                   | Debian GNU/Linux 12 (bookworm)           |
+| ブートディスクサイズ | 20GB                                     |
+| tags                 | http-server, https-server, http-8080     |
 
 ### ファイアーウォールルールを作成
 
@@ -64,5 +66,4 @@ sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 
 ```sh
 bash ./nginx/gen-certs.sh <your-ip-address>
-docker compose -f docker-compose.prod.yml up -d
 ```
