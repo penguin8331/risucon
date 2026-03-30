@@ -116,7 +116,7 @@ func main() {
 	e.Use(session.Middleware(cookiestore))
 
 	// 初期化
-	e.POST("/api/initialize", initializeHandler)
+	// e.POST("/api/initialize", initializeHandler)
 
 	// user
 	e.POST("/api/register", registerHandler)
